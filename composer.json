@@ -1,0 +1,21 @@
+{
+    "name": "root/paginate",
+    "description": "Paginação com json , php e mysql",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vagner Oliveira",
+            "email": "ziminny@hotmail.com"
+        }
+    ],
+    "require": {
+        "php" : ">=7.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ziminny\\Paginate\\" :"/app"
+            
+        },
+        "classmap": ["app"]
+    }
+}
