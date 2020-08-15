@@ -18,7 +18,6 @@
         "psr-4": {
             "Ziminny\\Paginate\\" :"src/"
             
-        },
-        "classmap": ["src"]
+        }
     }
 }
