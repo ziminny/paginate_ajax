@@ -1,6 +1,9 @@
 {
     "name": "root/paginate",
     "description": "Paginação com json , php e mysql",
+    "type": "package",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "license": "MIT",
     "authors": [
         {
@@ -13,9 +16,9 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\Paginate\\" :"/app"
+            "Ziminny\\Paginate\\" :"src/"
             
         },
-        "classmap": ["app"]
+        "classmap": ["src"]
     }
 }
