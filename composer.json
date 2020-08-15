@@ -13,7 +13,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Ziminny\\Paginate\\" :"/app"
+            "App\\Paginate\\" :"/app"
             
         },
         "classmap": ["app"]
