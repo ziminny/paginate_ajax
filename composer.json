@@ -1,5 +1,5 @@
 {
-    "name": "root/paginate",
+    "name": "ziminny/paginate_jason",
     "description": "Paginação com json , php e mysql",
     "type": "package",
     "minimum-stability": "dev",
@@ -18,6 +18,7 @@
         "psr-4": {
             "Ziminny\\Paginate\\" :"src/"
             
-        }
+        },
+        "classmap": ["src"]
     }
 }
