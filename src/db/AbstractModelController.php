@@ -4,7 +4,7 @@ namespace Ziminny\Paginate\db;
 
 abstract class AbstractModelController {
     // linhas por página
-    public $rowPerPage = 5;
+    public $rowPerPage = 8;
     // Conexão do bando de dados
     public $conn = null;
     // caso esteja na primera pagina
@@ -16,6 +16,8 @@ abstract class AbstractModelController {
     private $columnsTable; 
     // Caso queira personalizar o nome das colunas
     private $personalizeColumnsName;
+
+    public $paginaateResponsive = false;
 
     public function __construct($connection)
     {
@@ -159,7 +161,7 @@ abstract class AbstractModelController {
         $output2 = '
 
         <div class="d-flex justify-content-center p-0 mt-1" id="main-div-pagination">
-        <ul class="pagination">
+        <ul class="pagination" id="ul-paginate-responsive">
 ';
         // arredondo p cima a quantidade de links quanditade de linhas dividido pela quandidade de registros
         $totalLinks = ceil($this->totalRow/$this->rowPerPage);  
@@ -231,7 +233,7 @@ abstract class AbstractModelController {
             endif;
     endfor;
 
-return $output2 .=$previous_link . $page_link . $next_link . "</ul></div>" . $this->responsivePaginateResize();
+return $output2 .=$previous_link . $page_link . $next_link . "</ul></div>" . $this->responsivePaginateResize($this->paginaateResponsive);
 
      }
 
@@ -299,18 +301,18 @@ return $output2 .=$previous_link . $page_link . $next_link . "</ul></div>" . $th
         return $page_array;
      }
 
-     private function responsivePaginateResize() {
+     private function responsivePaginateResize($responsive = false) {
 
-    
+     if($responsive) :
         $js = '';
         $handle = '';
         $file = '';
         $folder = $_SERVER['DOCUMENT_ROOT'] . "/config_paginate";
         // crio uma parta no diretorio raiz
         if(!file_exists($folder))
-        mkdir("config_paginate");
+        mkdir($folder);
         // faço a copia dos arquivos p/ a pasta
-        if(!file_exists($folder . "/responsive_paginate.php"))      
+        if(!file_exists($folder . "/responsive_paginate.js"))    
         copy(dirname(__DIR__) . "/js/responsive_paginate.js" , $_SERVER['DOCUMENT_ROOT'] . "/config_paginate/responsive_paginate.js");
 
         if ($handle = opendir($_SERVER['DOCUMENT_ROOT']. '/config_paginate')) {
@@ -327,7 +329,7 @@ return $output2 .=$previous_link . $page_link . $next_link . "</ul></div>" . $th
             return $js;
         }
         
-
+    endif;
      }
  
 }

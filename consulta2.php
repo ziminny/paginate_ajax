@@ -8,7 +8,8 @@ use Ziminny\Paginate\db\Table;
 
 $select = new AjaxTable();
 $select->conn = Conn::self();
-$select->rowPerPage = 2;
+//$select->rowPerPage = 5;
+$select->paginaateResponsive = true;
 
 $array = [
     
