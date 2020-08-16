@@ -19,6 +19,7 @@
             "Ziminny\\Paginate\\" :"src/"
             
         },
-        "classmap": ["src"]
+        "classmap": ["src"],
+        "files": ["src/utils/functions.php"]
     }
 }
