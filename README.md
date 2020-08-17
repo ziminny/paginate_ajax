@@ -109,7 +109,7 @@ public function yourTableModel()
     }
 ```
 
-&nbsp;Se preferir crie um arquivo p/ nao chamar direto sua model  
+&nbsp;Se preferir crie um arquivo p/ não chamar direto sua model  
 
 ```php
 // Ex:. arquivo my_page.php
@@ -118,7 +118,7 @@ $datas->yourTableModel() // return html
 ```
 
 
-&nbsp;Na sua view onde os dados serão apresentados insira o seguinte código html a o input de pesquisa é opcional
+&nbsp;Na sua view onde os dados serão apresentados insira o seguinte código html , o input de pesquisa é opcional
 
 ```html
 <input type="text" id="search_box">
