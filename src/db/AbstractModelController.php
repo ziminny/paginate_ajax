@@ -3,6 +3,8 @@
 namespace Ziminny\Paginate\db;
 
 abstract class AbstractModelController {
+
+    use TraitInitConfig;
     // linhas por página
     public $rowPerPage = 8;
     // Conexão do bando de dados
@@ -33,7 +35,10 @@ abstract class AbstractModelController {
     protected function createTable($array) 
     {
         // /utils/functions.php filtra os dados e converte em objeto
-        $datas = initConfigs($array);
+
+    
+
+        $datas = $this->initConfigs($array);
 
        
         $alias = $datas->innerJoin['alias'];
