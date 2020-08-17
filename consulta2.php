@@ -11,7 +11,7 @@ $select->conn = Conn::self();
 //$select->rowPerPage = 5;
 $select->paginaateResponsive = true;
 
-$array = [
+$table = [
     
     'posts' => [
         'pages'  => 'page',
@@ -24,9 +24,35 @@ $array = [
     'personalizeFields' => [
             'id'   => 'Código',
             'name' => 'Nome',
-            'age'  => 'Idade'
+            'age'  => 'Idade',
+            
+    ],
+    'innerJoin' => [
+        'alias' => true,
+        'table'   => 'address',
+        'compare' => 'id_address=id',
+        'columns' => 'street,num',
+        'personalizeFields' => [
+            'street' => 'Rua',
+            'num' => 'Número'
+        ]
+
+    ],
+    'viewsCount' => [
+        
+            'position' => 'center',
+            'text'     => 'Total de - ' 
     ]
 
     ];
 
-$select->table($array)->paginate()->run();
+    $paginate = [
+        'paginateResponsive' => true,
+        'position' => 'end',
+        'previous' => '',
+        'next' => ''
+    ];
+
+$select->table($table)
+        ->paginate($paginate)
+        ->run();

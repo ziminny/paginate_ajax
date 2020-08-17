@@ -8,6 +8,8 @@ function initConfigs($datas) {
     $array['orderBy'] = $datas['orderBy'];
     $array['where']   = $datas['where'];
     $array['columns'] = $datas['columns'];
+    $array['viewsCount'] = $datas['viewsCount'];
+    $array['innerJoin'] = $datas['innerJoin'];
 
     // $array['columns'] = str_replace(" " , "",$array['collumns']);
     // $columnsArray = explode(",",$array['columns']);
@@ -16,6 +18,12 @@ function initConfigs($datas) {
         $array['columnsTable'] = $datas['personalizeFields'];
     endif;
 
+
     return (object) $array;
+}
+
+function initStyles($datas) {
+
+    $array['paginateResponseve'] = $datas['paginateResponsive'];
 
 }

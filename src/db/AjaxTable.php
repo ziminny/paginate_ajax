@@ -17,12 +17,16 @@ class AjaxTable extends AbstractModelController{
     public function table($array) 
     {
           $this->thisClass =  parent::createTable($array); 
+          
           return $this;
 
     }
 
-    public function paginate() 
-    {       $this->thisClass .= parent::pagination();
+    public function paginate($array = []) 
+    {       
+  
+        $this->thisClass .= parent::pagination($array) . parent::responsivePaginateResize($array);
+
             return $this;
     }
 
@@ -30,7 +34,6 @@ class AjaxTable extends AbstractModelController{
     {
          echo $this->thisClass;
     } 
-
 
 
 }

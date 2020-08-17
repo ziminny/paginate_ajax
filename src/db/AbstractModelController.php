@@ -16,8 +16,10 @@ abstract class AbstractModelController {
     private $columnsTable; 
     // Caso queira personalizar o nome das colunas
     private $personalizeColumnsName;
+    private $personalizeColumnsNameInnserJoin;
+    private $positionPagination = 'center';
 
-    public $paginaateResponsive = false;
+    private $newRowsInTableInnerJoin;
 
     public function __construct($connection)
     {
@@ -33,7 +35,13 @@ abstract class AbstractModelController {
         // /utils/functions.php filtra os dados e converte em objeto
         $datas = initConfigs($array);
 
+       
+        $alias = $datas->innerJoin['alias'];
+        
+
+
         $this->personalizeColumnsName = $datas->columnsTable;
+        $this->personalizeColumnsNameInnserJoin = $datas->innerJoin['personalizeFields'];
         $this->page = 1;
         // retiro todos os espaços exemplo : { id , nome , idade} - > {id,nome,idade}
         $datas->columns = str_replace(' ' , '' ,$datas->columns);
@@ -45,11 +53,43 @@ abstract class AbstractModelController {
 
         $isFrom = $datas->columns == '' ? '*' : $datas->columns;
                     // tranformo em um array contendo os cabeçalhos da tabela
+            $joinAlias = '';
+            $join = '';
             
             $this->columnsTable = explode(",",$datas->columns);
 
+            if($alias) :
+                $explodeJoin = explode(',',$datas->innerJoin['columns']);
+                $mergeJoinWithSelect = array_merge($this->columnsTable,$explodeJoin);
+               
+                for ($i=0; $i <count($mergeJoinWithSelect) ; $i++) { 
+                    if(count($this->columnsTable) <= $i) : 
+                        $this->newRowsInTableInnerJoin[$i] = $datas->innerJoin['table'].$mergeJoinWithSelect[$i];
+                        $joinAlias .= $datas->innerJoin['table'].".".$mergeJoinWithSelect[$i] . " as " .$this->newRowsInTableInnerJoin[$i] . ",";  
+                    else:
+                        $this->newRowsInTableInnerJoin[$i] = $datas->table.$mergeJoinWithSelect[$i];
+                        $joinAlias .= $datas->table.".".$mergeJoinWithSelect[$i] . " as " .$this->newRowsInTableInnerJoin[$i] . ",";  
+                       
+                    endif;
+                    
+                       
+                }
+                $datas->innerJoin['columns'] = str_replace(" ", "",$datas->innerJoin['columns']);
+                $ecplodeInnerJoin = explode(",",$datas->innerJoin['columns']);
+                $this->columnsTable = array_merge($this->columnsTable , $ecplodeInnerJoin);
+                $joinAlias = substr($joinAlias , 0 ,-1);
+                $innerJoinTaableName = $datas->innerJoin['table'];
+
+                $compare = str_replace(" " , "" , $datas->innerJoin['compare']);
+                $explodeCompare = explode("=",$compare);
+                $join = ' INNER JOIN '. $innerJoinTaableName . ' ON ' . $datas->table.'.'.$explodeCompare[0] . '=' . $innerJoinTaableName .'.'.$explodeCompare[1];
+            else:
+                $joinAlias = $isFrom;
+                $this->newRowsInTableInnerJoin = $this->columnsTable;
+            endif;
+         
         $query = '
-                SELECT ' . $isFrom . ' from '. $datas->table . '
+                SELECT '.$joinAlias .' from '. $datas->table .$join .  '
         ';
 
         if($datas->input != '' ) : 
@@ -80,7 +120,7 @@ abstract class AbstractModelController {
 
         $result = $stmt->fetchAll();
 
-        return $this->createTableBootstrap($result);
+        return $this->createTableBootstrap($result , $datas);
 
     }
 
@@ -88,15 +128,16 @@ abstract class AbstractModelController {
      * Cria uma tabela com uma cor default que pode ser personalizada 
      * @param $resul -> consulta retornada pelo banco de dados
      */
-    private function createTableBootstrap($result) 
+    private function createTableBootstrap($result , $array) 
     {
-
-
+              $flex = (!isset($array->viewsCount['position']) || $array->viewsCount['position'] == '') ? 'end' : $array->viewsCount['position'];
+              $total = (!isset($array->viewsCount['text']) || $array->viewsCount['text'] == '')  ? 'Total - ' : $array->viewsCount['text'];  
         $output = '
-             <label> Total de dados - ' . $this->totalRow . '</label>
-             <table class="table table-striped table-borded">
+             <label class="d-flex justify-content-' .$flex.' mr-1">'.$total. $this->totalRow . '</label>
+             <table class="table table-striped border table-borded">
              <tr>
                 '. $this->collumnsInTable().'
+                
              </tr>';
 
                 if($this->totalRow > 0) :
@@ -105,6 +146,7 @@ abstract class AbstractModelController {
                             $output .= '
                                 <tr>
                                 '. $this->rowsInTable($row) .'
+                               
                                 </tr>
                             ';
                     endforeach;
@@ -128,9 +170,9 @@ abstract class AbstractModelController {
     private function rowsInTable($row)
      {
          $output = '';
-        for ($i=0; $i < count($this->columnsTable); $i++) : 
+        for ($i=0; $i < count($this->newRowsInTableInnerJoin); $i++) : 
             $output .= "
-                <td>" . $row[$this->columnsTable[$i]] . "</td>
+                <td>" . $row[$this->newRowsInTableInnerJoin[$i]] . "</td>
             ";
         endfor;
         return $output;
@@ -140,13 +182,15 @@ abstract class AbstractModelController {
       * retorna as linha com os registros
       */
      private function collumnsInTable() {
-
-        $columns = '';
-        for ($i=0; $i <count($this->columnsTable) ; $i++) :
-
+        $joinPersolaliseFields = array_merge($this->personalizeColumnsName,$this->personalizeColumnsNameInnserJoin);
+        $columns = '';      
+        for ($i=0; $i <count($this->newRowsInTableInnerJoin) ; $i++) :
+        
                 if(isset($this->personalizeColumnsName[$this->columnsTable[$i]] )) :
             $columns .="<th>". $this->personalizeColumnsName[$this->columnsTable[$i]] ."</th>";
-                else:
+                elseif(isset($this->personalizeColumnsNameInnserJoin[$this->columnsTable[$i]]) ):
+                    $columns .="<th>". $this->personalizeColumnsNameInnserJoin[$this->columnsTable[$i]] ."</th>";
+                else:    
                     $columns .="<th>". $this->columnsTable[$i] ."</th>";
                 endif;
             endfor;
@@ -157,10 +201,15 @@ abstract class AbstractModelController {
       * @return html
       *retorna um html contendo a paginação
       */
-     protected function pagination() {
+     protected function pagination($array) {
+
+            if(is_array($array)) :
+                $array  = (object) $array;
+            endif;
+            $this->positionPagination = isset($array->position) ? $array->position : $this->positionPagination;
         $output2 = '
 
-        <div class="d-flex justify-content-center p-0 mt-1" id="main-div-pagination">
+        <div class="d-flex justify-content-'.$this->positionPagination.' p-0 mt-1" id="main-div-pagination">
         <ul class="pagination" id="ul-paginate-responsive">
 ';
         // arredondo p cima a quantidade de links quanditade de linhas dividido pela quandidade de registros
@@ -170,6 +219,9 @@ abstract class AbstractModelController {
         $previous_link = '';
         $next_link = '';
         $page_link = '';
+
+        $prevLinkName = (isset($array->previous) && $array->previous != '') ? $array->previous : '&laquo;';
+        $nextLinkName = (isset($array->next) && $array->next != '') ? $array->next : '&raquo';
 
     for ($count=0; $count < count($page_array); $count++) :
             if($this->page == $page_array[$count]) :
@@ -186,13 +238,13 @@ abstract class AbstractModelController {
                         if($previous_id > 0) :
                             $previous_link = '
                                 <li class="page-item">
-                                    <a class="page-link" href="javascript:void(0)" data-page_number="'.$previous_id.'">&laquo; </a>
+                                    <a class="page-link" href="javascript:void(0)" data-page_number="'.$previous_id.'">'. $prevLinkName .' </a>
                                 </li>
                             ';
                         else:
                             $previous_link = '
                             <li class="page-item disabled">
-                            <a class="page-link" href="#">&laquo; </a>
+                            <a class="page-link" href="#">'. $prevLinkName .'  </a>
                             </li> 
                             ';
                             
@@ -203,13 +255,13 @@ abstract class AbstractModelController {
                         if($next_id > $totalLinks) :
                                 $next_link = '
                                 <li class="page-item disabled">
-                                <a class="page-link" href="#">&raquo </a>
+                                <a class="page-link" href="#"> '. $nextLinkName .' </a>
                                 </li>';
 
                         else:
                             $next_link = '
                             <li class="page-item">
-                            <a class="page-link" href="javascript:void(0)" data-page_number="'.$next_id.'">&raquo </a>
+                            <a class="page-link" href="javascript:void(0)" data-page_number="'.$next_id.'">'. $nextLinkName .' </a>
                             </li>
                             ';
                         endif;
@@ -233,7 +285,7 @@ abstract class AbstractModelController {
             endif;
     endfor;
 
-return $output2 .=$previous_link . $page_link . $next_link . "</ul></div>" . $this->responsivePaginateResize($this->paginaateResponsive);
+return $output2 .=$previous_link . $page_link . $next_link . "</ul></div>" ;
 
      }
 
@@ -301,9 +353,13 @@ return $output2 .=$previous_link . $page_link . $next_link . "</ul></div>" . $th
         return $page_array;
      }
 
-     private function responsivePaginateResize($responsive = false) {
+     protected function responsivePaginateResize($array) {
+        if(is_array($array)):
+            $array = (object) $array;
+        endif;
 
-     if($responsive) :
+        $this->positionPagination = $array->position;
+     if($array->paginateResponsive) :
         $js = '';
         $handle = '';
         $file = '';
