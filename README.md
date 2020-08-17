@@ -165,3 +165,7 @@ $(document).ready( function() {
                 })           
         });
 ```
+
+&nbsp; A saida sera parecida com essa :
+
+![Caption for the picture.](https://github.com/ziminny/paginate_ajax/blob/master/src/img/scr.png)
