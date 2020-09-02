@@ -6,7 +6,7 @@ Paginação com ajax e jQuery
 ### Iniciando
 
 ```shel
-composer require ziminny/paginate_ajax
+composer require ziminny/paginate_jason
 ```
 
 &nbsp;Em sua model insira os seguintes registros
