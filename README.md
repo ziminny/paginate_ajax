@@ -1,7 +1,7 @@
 # Paginate Ajax
 
 
-Paginação assincrôna com ajax e jQuery
+Paginação com ajax e jQuery
 
 ### Iniciando
 
